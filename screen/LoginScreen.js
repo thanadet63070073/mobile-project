@@ -18,24 +18,24 @@ const LoginScreen = ({navigation}) => {
   const [isLoading, setLoading] = useState(true);
   const [data, setData] = useState([]);
   
-  useEffect(() => {
-    axios
-        .get('http://'+ip+':3000/menu')
-        .then(function (response) {
-          // handle success
-          setData(response.data);
-          console.log("aaa: " + response.data[0].menu_name);
-        })
-        .catch(function (error) {
-          // handle error
-          console.log(error.message);
-        })
-        .finally(function () {
-          // always executed
-          setLoading(false);
-          console.log('Finally called');
-      });
-  }, []);
+  // useEffect(() => {
+  //   axios
+  //       .get('http://'+ip+':3000/menu')
+  //       .then(function (response) {
+  //         // handle success
+  //         setData(response.data);
+  //         console.log("aaa: " + response.data[0].menu_name);
+  //       })
+  //       .catch(function (error) {
+  //         // handle error
+  //         console.log(error.message);
+  //       })
+  //       .finally(function () {
+  //         // always executed
+  //         setLoading(false);
+  //         console.log('Finally called');
+  //     });
+  // }, []);
   
  
   return (

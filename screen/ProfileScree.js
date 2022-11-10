@@ -112,7 +112,7 @@ const ProfileScreen = ({navigation}) => {
           </TouchableOpacity>
         </View>
         
-        <TouchableOpacity style={styles.logoutBtn} onPress={() => navigation.navigate("Home Screen")}>
+        <TouchableOpacity style={styles.logoutBtn} onPress={() => navigation.navigate("Login Screen")}>
           <Text style={styles.changeText}>Logout</Text>
         </TouchableOpacity>
         
@@ -128,9 +128,8 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   backgroundimage: {
-    flex: 1,
     alignItems: "center",
-    justifyContent: "space-between"
+    justifyContent: "space-between",
   },
   sectionView: {
     marginTop: 20,

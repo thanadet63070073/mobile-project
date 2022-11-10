@@ -32,7 +32,7 @@ const TimetableScreen = ({navigation}) => {
 
   return (
     <View style={styles.container}>
-      <HeaderBar navigation={navigation} />
+      <HeaderBar navigation={navigation}/>
       <ImageBackground source={require("../assets/images/background-image.png")} resizeMode="cover" style={styles.backgroundimage}>
         {/* <Image style={styles.logoImage} source={{uri:"https://www.kmids.ac.th/wp-content/uploads/2021/04/Sub-Logo-KMITL_KMITL-%E0%B8%9E%E0%B8%A3%E0%B8%B0%E0%B8%88%E0%B8%AD%E0%B8%A1%E0%B9%80%E0%B8%81%E0%B8%A5%E0%B9%89%E0%B8%B2%E0%B8%A5%E0%B8%B2%E0%B8%94%E0%B8%81%E0%B8%A3%E0%B8%B0%E0%B8%9A%E0%B8%B1%E0%B8%87.png"}} /> */}
         
@@ -45,13 +45,13 @@ const TimetableScreen = ({navigation}) => {
           setValue={setValue}
           setItems={setItems}
           // onSelectItem={}
-          style={styles.dropdown}
+          style={{borderWidth: 0, backgroundColor: 'transparent', width: 200,}}
           labelStyle={{
             fontSize: 18,
             textDecorationLine: 'underline',
             textDecorationThickness: 3,
             color: '#FF9900',
-            fontWeight: 'bold'
+            fontWeight: 'bold',
           }}
         />
 
@@ -112,11 +112,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     paddingHorizontal: 20,
     paddingVertical: 10,
-  },
-  dropdown: {
-    backgroundColor: 'transparent',
-    width: 200,
-    border: 0,
   },
   circleView:{
     flex: 1,

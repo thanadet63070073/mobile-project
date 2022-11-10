@@ -13,37 +13,37 @@ import HomeScreen from "./screen/HomeScreen";
 import TimetableScreen from './screen/TimetableScreen';
 import ChatScreen from './screen/ChatScreen';
 import ProfileScreen from './screen/ProfileScree';
+import NotificationScreen from './screen/NotificationScreen';
 
 const Tab = createBottomTabNavigator();
 
 function MenuTab() {
   return (
     <Tab.Navigator screenOptions={{headerShown: false, 
+      tabBarShowLabel: false,
       tabBarActiveTintColor: "#FF9900",
       tabBarInactiveTintColor: 'white',
       tabBarStyle: { backgroundColor: "#FF9900" },}}>
-      {/* <Tab.Screen name="Home" component={HomeScreen} options={{tabBarActiveBackgroundColor: "white", tabBarLabel:"",
+      <Tab.Screen name="Home" component={HomeScreen} options={{tabBarActiveBackgroundColor: "white",
         tabBarIcon: ({ color, size }) => { 
           return <FontAwesome name="home" size={size} color={color} />;
         },
-      }}/> */}
-      {/* <Tab.Screen name="Timetable" component={TimetableScreen} options={{tabBarActiveBackgroundColor: "white", tabBarLabel:"",
+      }}/>
+      <Tab.Screen name="Timetable" component={TimetableScreen} options={{tabBarActiveBackgroundColor: "white",
         tabBarIcon: ({ color, size }) => { 
           return <MaterialCommunityIcons name="timetable" size={size} color={color} />;
         },
       }}/>
-      <Tab.Screen name="Chat" component={ChatScreen} options={{tabBarActiveBackgroundColor: "white", tabBarLabel:"",
+      <Tab.Screen name="Chat" component={ChatScreen} options={{tabBarActiveBackgroundColor: "white",
         tabBarIcon: ({ color, size }) => { 
           return <Entypo name="chat" size={size} color={color} />;
         },
-      }}/> */}
-      <Tab.Screen name="Profile" component={ProfileScreen} options={{tabBarActiveBackgroundColor: "white", tabBarLabel:"",
+      }}/>
+      <Tab.Screen name="Profile" component={ProfileScreen} options={{tabBarActiveBackgroundColor: "white",
         tabBarIcon: ({ color, size }) => { 
           return <MaterialCommunityIcons name="account-cog" size={size} color={color} />;
         },
       }}/>
-      {/* <Tab.Screen name="Register 2" component={RegisterScreen}/>
-      <Tab.Screen name="Register 3" component={RegisterScreen}/> */}
     </Tab.Navigator>
   )
 }
@@ -56,8 +56,9 @@ export default function App() {
     <NavigationContainer>
       <Stack.Navigator>
         {/* <Stack.Screen name="Login Screen" component={LoginScreen} options={{headerTitleStyle:{color: 'white'}, headerStyle: {backgroundColor: '#FF9900'}}}/>
-        <Stack.Screen name="Register Screen" component={RegisterScreen} options={{headerTitleStyle:{color: 'white'}, headerStyle: {backgroundColor: '#FF9900'}}}/> */}
-        <Stack.Screen options={{headerShown: false}} name="Home Screen" component={MenuTab}/>
+        <Stack.Screen name="Register Screen" component={RegisterScreen} options={{headerTitleStyle:{color: 'white'}, headerStyle: {backgroundColor: '#FF9900'}}}/>
+        <Stack.Screen name="Home Screen" component={MenuTab} options={{headerShown: false}}/> */}
+        <Stack.Screen name="Notification Screen" component={NotificationScreen} options={{headerShown: false}}/>
       </Stack.Navigator>
     </NavigationContainer>
   );

@@ -9,36 +9,29 @@ import {
   ImageBackground,
 } from "react-native";
 import { MaterialCommunityIcons} from '@expo/vector-icons';
+import HeaderBar from "../component/HeaderBar";
 
 import axios from 'axios';
 import {ip} from '../Ip'
-import HeaderBar from "../component/HeaderBar";
 
 
-const ChatScreen = ({navigation}) => {
+const NotificationScreen = ({navigation}) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setLoading] = useState(true);
   const [data, setData] = useState([]);
  
   return (
-    <View style={styles.container}>
-      <HeaderBar navigation={navigation}/>
+    <View style={styles.container} aaa={true}>
+      <HeaderBar navigation={navigation} aaa={true}/>
       <ImageBackground source={require("../assets/images/background-image.png")} resizeMode="cover" style={styles.backgroundimage}>
         <StatusBar style="auto" />
         <View style={styles.boxView}>
           <View style={styles.box}>
-            <View style={styles.iconView}>
-              <MaterialCommunityIcons style={styles.icon} name="account-circle-outline" />
-            </View>
             <View style={styles.textView}>
-              <Text style={styles.chatDetail}>Teacher Name&Surname</Text>
-              <Text style={styles.chatDetail}>Subject Name</Text>
-            </View>
-            <View style={styles.unreadView}>
-              <View style={styles.unreadNum}>
-                <Text style={{fontWeight: 'bold', color: 'white', fontSize: 16}}>1</Text>
-              </View>
+              <Text style={styles.nameText}>Name</Text>
+              <Text style={styles.notificationText}>Sent Message</Text>
+              <Text style={styles.timeText}>15:00</Text>
             </View>
           </View>
         </View>
@@ -52,55 +45,39 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
   },
-  iconView: {
-    flex: 1,
-    justifyContent: 'center'
-  },
-  icon: {
-    fontSize: 50,
-    color: 'black',
-  },
   backgroundimage: {
     flex: 1,
-  },
-  text:{
-    fontWeight: 'bold',
-    marginBottom: 5,
-    fontSize:20,
   },
   boxView: {
     marginTop: 10,
     paddingHorizontal: 5,
   },
   box: {
-    backgroundColor: '#F7D0D5',
+    backgroundColor: 'white',
     width: '100%',
-    height: 80,
+    height: 100,
     borderRadius: 10,
-    flexDirection: 'row',
     paddingHorizontal: 20,
     paddingVertical: 10,
-    justifyContent: 'space-between'
+    border: '1px solid gray'
   },
   textView:{
     flex: 5,
-    justifyContent: 'center'
+    justifyContent: 'space-around'
   },
-  chatDetail: {
+  nameText: {
     fontSize: 16,
     fontWeight: 'bold',
   },
-  unreadView:{
-    justifyContent:"center",
+  notificationText:{
+    fontSize: 14
   },
-  unreadNum:{
-    backgroundColor: 'red',
-    borderRadius: "100%",
-    paddingHorizontal: 15,
-    paddingVertical: 10,
+  timeText: {
+    color: 'gray',
+    fontWeight: 'bold',
   }
   
 });
 
-export default ChatScreen;
+export default NotificationScreen;
 
