@@ -22,8 +22,8 @@ const NotificationScreen = ({navigation}) => {
   const [data, setData] = useState([]);
  
   return (
-    <View style={styles.container} aaa={true}>
-      <HeaderBar navigation={navigation} aaa={true}/>
+    <View style={styles.container}>
+      <HeaderBar navigation={navigation} goBack={true}/>
       <ImageBackground source={require("../assets/images/background-image.png")} resizeMode="cover" style={styles.backgroundimage}>
         <StatusBar style="auto" />
         <View style={styles.boxView}>

@@ -2,13 +2,9 @@ import React from 'react';
 import { StyleSheet, Image } from 'react-native';
 import { Appbar } from 'react-native-paper';
 
-
-
-
-
 const HeaderBar = (props) => {
   const BackAction = () => {
-    if(props.aaa){
+    if(props.goBack){
       return(
           <Appbar.BackAction color='white' onPress={() => props.navigation.pop()}/>
       );

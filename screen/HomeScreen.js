@@ -4,22 +4,18 @@ import {
   StyleSheet,
   Text,
   View,
-  Image,
-  TouchableOpacity,
   ImageBackground,
 } from "react-native";
 import { MaterialCommunityIcons} from '@expo/vector-icons';
 import HeaderBar from "../component/HeaderBar";
-
-import axios from 'axios';
-import {ip} from '../Ip'
-
+import { useSelector } from "react-redux";
 
 const HomeScreen = ({navigation}) => {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [isLoading, setLoading] = useState(true);
-  const [data, setData] = useState([]);
+  const storeData = useSelector((state) => state.reducer.account);
+  const [accountData, setData] = useState("");
+  useEffect(() => {
+    setData(storeData[0]);
+  }, []);
  
   return (
     <View style={styles.container}>
@@ -31,9 +27,10 @@ const HomeScreen = ({navigation}) => {
         <StatusBar style="auto" />
         <View style={styles.textView}>
           <MaterialCommunityIcons style={styles.Icon} name="account-circle-outline" />
-            <Text style={styles.text}>Student ID : 63xxxxxx</Text>
-            <Text style={styles.text}>FirstName LastName</Text>
-            <Text style={styles.text}>Faculity : Information Technology</Text>
+            <Text style={styles.text}>Student ID : {accountData.student_id}</Text>
+            <Text style={styles.text}>{accountData.fname} {accountData.lname}</Text>
+            <Text style={styles.text}>Year: {accountData.year}</Text>
+            <Text style={styles.text}>Faculity : {accountData.faculty}</Text>
         </View>
       </ImageBackground>
     </View>

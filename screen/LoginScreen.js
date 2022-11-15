@@ -10,39 +10,48 @@ import {
 } from "react-native";
 import {TextInput} from 'react-native-paper'
 import axios from 'axios';
+import { useDispatch } from 'react-redux';
+import { accountLogin } from "../store/action/loginAction";
 import {ip} from '../Ip'
 
 const LoginScreen = ({navigation}) => {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [isLoading, setLoading] = useState(true);
-  const [data, setData] = useState([]);
-  
-  // useEffect(() => {
-  //   axios
-  //       .get('http://'+ip+':3000/menu')
-  //       .then(function (response) {
-  //         // handle success
-  //         setData(response.data);
-  //         console.log("aaa: " + response.data[0].menu_name);
-  //       })
-  //       .catch(function (error) {
-  //         // handle error
-  //         console.log(error.message);
-  //       })
-  //       .finally(function () {
-  //         // always executed
-  //         setLoading(false);
-  //         console.log('Finally called');
-  //     });
-  // }, []);
-  
+  const [username, setUsername] = useState("63070073");
+  const [password, setPassword] = useState("1234");
+  const dispatch = useDispatch();
+
+  function confirmLogin(){
+    if(username == ""){
+      alert("Please insert username");
+    }
+    else if(password == ""){
+      alert("Please insert password");
+    }
+    else{
+      axios.post('http://'+ip+':3000/login', {username: username, password: password})
+      .then(function (response){
+        console.log(response.data);
+        if(response.data.status == 'complete'){
+          const accountData = response.data.accountData;
+          setUsername("");
+          setPassword("");
+          dispatch(accountLogin(accountData));
+          
+          navigation.navigate("Home Screen");
+        }
+        else if(response.data.status == "not found"){
+          alert("username or password is incorrect");
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+    }
+  }
  
   return (
     <View style={styles.container}>
       <ImageBackground source={require("../assets/images/background-image.png")} resizeMode="cover" style={styles.backgroundimage}>
       <Image style={styles.logoImage} source={require("../assets/images/kmitl-text.png")} />
-        {/* <Image style={styles.logoImage} source={{uri:"https://www.kmids.ac.th/wp-content/uploads/2021/04/Sub-Logo-KMITL_KMITL-%E0%B8%9E%E0%B8%A3%E0%B8%B0%E0%B8%88%E0%B8%AD%E0%B8%A1%E0%B9%80%E0%B8%81%E0%B8%A5%E0%B9%89%E0%B8%B2%E0%B8%A5%E0%B8%B2%E0%B8%94%E0%B8%81%E0%B8%A3%E0%B8%B0%E0%B8%9A%E0%B8%B1%E0%B8%87.png"}} /> */}
         
         <StatusBar style="auto" />
         <View style={styles.inputView}>
@@ -55,6 +64,7 @@ const LoginScreen = ({navigation}) => {
             left={<TextInput.Icon style={{marginTop: 15}} name="account" />}
             placeholderTextColor="#003f5c"
             onChangeText={(username) => setUsername(username)}
+            value={username}
             />
         </View>
     
@@ -69,14 +79,15 @@ const LoginScreen = ({navigation}) => {
             left={<TextInput.Icon style={{marginTop: 15}} name="lock" />}
             secureTextEntry={true}
             onChangeText={(password) => setPassword(password)}
+            value={password}
             />
         </View>
     
-        <TouchableOpacity onPress={() => {navigation.navigate("Register Screen")}}>
+        {/* <TouchableOpacity onPress={() => {navigation.navigate("Register Screen")}}>
             <Text style={styles.register_button}>Register</Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
     
-        <TouchableOpacity style={styles.loginBtn} onPress={() => navigation.navigate("Home Screen")}>
+        <TouchableOpacity style={styles.loginBtn} onPress={confirmLogin}>
             <Text style={styles.loginText}>Login</Text>
         </TouchableOpacity>
       </ImageBackground>

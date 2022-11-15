@@ -8,8 +8,8 @@ import {
   TouchableOpacity,
   ImageBackground,
 } from "react-native";
-import { MaterialCommunityIcons} from '@expo/vector-icons';
 import HeaderBar from "../component/HeaderBar";
+import { useSelector } from "react-redux";
 
 import axios from 'axios';
 import {ip} from '../Ip'
@@ -17,66 +17,56 @@ import { TextInput } from "react-native-paper";
 
 
 const ProfileScreen = ({navigation}) => {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [isLoading, setLoading] = useState(true);
-  const [data, setData] = useState([]);
+  const storeData = useSelector((state) => state.reducer.account);
+  const [accountData, setData] = useState("");
+
+  useEffect(() => {
+    setData(storeData[0]);
+  }, []);
+
+  const [newPassword, setNew] = useState("");
+  const [confimrPassword, setConfirm] = useState("");
+
+  function confirmChangePassword(){
+    if(newPassword == ""){
+      alert("Please insert new password field");
+    }
+    else if(confimrPassword == ""){
+      alert("Please insert confirm password field");
+    }
+    else if(newPassword != confimrPassword){
+      alert("Passwords do not match");
+    }
+    else{
+      axios.post('http://'+ip+':3000/changePassword', {account_id: accountData.account_id ,password: newPassword})
+      .then(function (response){
+        console.log(response.data);
+        if(response.data.status == 'complete'){
+          alert("Change password complete");
+          setNew("");
+          setConfirm("");
+        }
+        else if(response.data.status == "same"){
+          alert("New password can't be same as old password");
+          setNew("");
+          setConfirm("");
+        }
+        else if(response.data.status == "error"){
+          alert("Error!");
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+    }
+  }
  
   return (
     <View style={styles.container}>
       <HeaderBar navigation={navigation} />
-      <ScrollView>
         <ImageBackground source={require("../assets/images/background-image.png")} resizeMode="cover" style={styles.backgroundimage}>
       
         <StatusBar style="auto" />
-
-        <View style={styles.sectionView}>
-          <Text style={styles.sectionName}>Change personal information</Text>
-          <View style={styles.formView}>
-            <View style={styles.inputView}>
-              <Text style={styles.inputDescription}>First name</Text>
-              <TextInput
-                style={styles.TextInput}
-                placeholder="First name"
-                mode="outlined"
-                theme={{colors: {primary: 'black', underlineColor: 'transparent'}}}
-                placeholderTextColor="#003f5c"
-                onChangeText={(username) => setUsername(username)}
-              />
-            </View>
-
-            <View style={styles.inputView}>
-              <Text style={styles.inputDescription}>Last name</Text>
-              <TextInput
-                style={styles.TextInput}
-                placeholder="Last name"
-                mode="outlined"
-                placeholderTextColor="#003f5c"
-                theme={{colors: {primary: 'black', underlineColor: 'transparent'}}}
-                secureTextEntry={true}
-                onChangeText={(password) => setPassword(password)}
-              />
-            </View>
-
-            <View style={styles.inputView}>
-              <Text style={styles.inputDescription}>Student ID</Text>
-              <TextInput
-                style={styles.TextInput}
-                placeholder="Student ID"
-                mode="outlined"
-                placeholderTextColor="#003f5c"
-                theme={{colors: {primary: 'black', underlineColor: 'transparent'}}}
-                secureTextEntry={true}
-                onChangeText={(password) => setPassword(password)}
-              />
-            </View>
-          </View>
-          <TouchableOpacity style={styles.changeBtn} onPress={() => navigation.navigate("Home Screen")}>
-            <Text style={styles.changeText}>Change personal information</Text>
-          </TouchableOpacity>
-        </View>
-
-
         <View style={styles.sectionView}>
           <Text style={styles.sectionName}>Change password</Text>
           <View style={styles.formView}>
@@ -88,8 +78,10 @@ const ProfileScreen = ({navigation}) => {
                 mode="outlined"
                 theme={{colors: {primary: 'black', underlineColor: 'transparent'}}}
                 left={<TextInput.Icon style={{marginTop: 15}} name="lock" />}
+                secureTextEntry={true}
                 placeholderTextColor="#003f5c"
-                onChangeText={(username) => setUsername(username)}
+                onChangeText={(password) => setNew(password)}
+                value={newPassword}
               />
             </View>
 
@@ -103,11 +95,12 @@ const ProfileScreen = ({navigation}) => {
                 theme={{colors: {primary: 'black', underlineColor: 'transparent'}}}
                 left={<TextInput.Icon style={{marginTop: 15}} name="lock" />}
                 secureTextEntry={true}
-                onChangeText={(password) => setPassword(password)}
+                onChangeText={(password) => setConfirm(password)}
+                value={confimrPassword}
               />
             </View>
           </View>
-          <TouchableOpacity style={styles.changeBtn} onPress={() => navigation.navigate("Home Screen")}>
+          <TouchableOpacity style={styles.changeBtn} onPress={confirmChangePassword}>
             <Text style={styles.changeText}>Change password</Text>
           </TouchableOpacity>
         </View>
@@ -117,7 +110,6 @@ const ProfileScreen = ({navigation}) => {
         </TouchableOpacity>
         
       </ImageBackground>
-      </ScrollView>
     </View>
   );
 };
@@ -128,6 +120,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   backgroundimage: {
+    flex: 1,
     alignItems: "center",
     justifyContent: "space-between",
   },
