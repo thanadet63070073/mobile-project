@@ -4,43 +4,110 @@ import {
   StyleSheet,
   Text,
   View,
-  Image,
-  TouchableOpacity,
   ImageBackground,
+  TextInput,
 } from "react-native";
-import { MaterialCommunityIcons} from '@expo/vector-icons';
+import { FontAwesome, MaterialCommunityIcons} from '@expo/vector-icons';
+import { useSelector } from "react-redux";
 
 import axios from 'axios';
 import {ip} from '../Ip'
 import HeaderBar from "../component/HeaderBar";
+import { FlatList } from "react-native-web";
 
-
+let currentDay = "";
 const ChatScreen = ({navigation}) => {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [isLoading, setLoading] = useState(true);
-  const [data, setData] = useState([]);
- 
+  const [chatData, setChatData] = useState([]);
+  const storeData = useSelector((state) => state.reducer.account);
+  const [accountData, setData] = useState("");
+  const [chatText, setChatText] = useState("");
+
+  useEffect(() => {
+    setData(storeData[0]);
+    if(accountData){
+        axios.post('http://'+ip+':3000/chatData', {account_id: accountData.account_id, receiver_id: 4})
+        .then(function (response){
+          if(response.data.status == 'complete'){
+            setChatData(response.data.chatData);
+          }
+          else{
+            console.log("error");
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+      }
+  }, [accountData]);
+
+  function DayComponent(props){
+    if(currentDay != props.day){
+      currentDay = props.day;
+      return <Text style={styles.dayText}>{currentDay}</Text>
+    }
+  }
+
+  const renderMessage = ({item}) =>{
+    return (
+        
+        <View style={[styles.container,]}>
+        <DayComponent day={item.dateTime} />
+        <View style={[styles.messageBox,
+        {backgroundColor: item.sender_id == accountData.account_id ? "#FF9900" : "#747474",
+        marginLeft: item.sender_id == accountData.account_id  ? 50 : 0,
+        marginRight: item.sender_id == accountData.account_id  ? 0 : 50,
+        }]}>
+            <Text style={styles.message}>{item.message}</Text>
+            <Text style={styles.date}>{item.Time}</Text>
+        </View>
+        </View>
+    )
+  }
+  const sendMessage = () =>{
+    if(chatText != ""){
+        console.log(chatText)
+        console.log(accountData.account_id)
+        axios.post('http://'+ip+':3000/chat', {account_id: accountData.account_id, receiver_id: 4, message:chatText})
+        .then((response) => {
+            if(response.data.status == "complete"){
+                axios.post('http://'+ip+':3000/chatData', {account_id: accountData.account_id, receiver_id: 4})
+                .then(function (response){
+                    if(response.data.status == 'complete'){
+                    setChatData(response.data.chatData);
+                }
+          else{
+            console.log("error");
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+            }
+            else{
+                alert("Message Unsended");
+            }
+            setChatText("");
+        })
+        .catch((err) =>{
+            alert("err: " + err);
+        });
+    }
+    
+  }
+
   return (
-    <View style={styles.container}>
-      <HeaderBar navigation={navigation}/>
-      <ImageBackground source={require("../assets/images/background-image.png")} resizeMode="cover" style={styles.backgroundimage}>
+    <View style={{flex: 1, justifyContent: "center"}}>
+        <ImageBackground source={require("../assets/images/background-image.png")} resizeMode="cover" style={styles.backgroundimage}>
         <StatusBar style="auto" />
-        <View style={styles.boxView}>
-          <View style={styles.box}>
-            <View style={styles.iconView}>
-              <MaterialCommunityIcons style={styles.icon} name="account-circle-outline" />
+        <FlatList data={chatData} renderItem={renderMessage}/>
+        <View style={styles.inputcontainer}>
+            <View style={styles.maincontainer}>
+                <FontAwesome name="smile-o" size={25} color="grey" />
+                <TextInput placeholder="Type a Message" multiline style={styles.textinput} onChangeText={setChatText}></TextInput>
             </View>
-            <View style={styles.textView}>
-              <Text style={styles.chatDetail}>Teacher Name&Surname</Text>
-              <Text style={styles.chatDetail}>Subject Name</Text>
+            <View style={styles.buttoncontainer}>
+                <FontAwesome name="paper-plane" size={25} color="white"  onPress={sendMessage}/>
             </View>
-            <View style={styles.unreadView}>
-              <View style={styles.unreadNum}>
-                <Text style={{fontWeight: 'bold', color: 'white', fontSize: 16}}>1</Text>
-              </View>
-            </View>
-          </View>
         </View>
       </ImageBackground>
     </View>
@@ -49,55 +116,60 @@ const ChatScreen = ({navigation}) => {
  
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    justifyContent: "center",
+    padding: 10,
   },
-  iconView: {
-    flex: 1,
-    justifyContent: 'center'
+  messageBox: {
+    borderRadius: 10,
+    padding: 10,
+    justifyContent: "center"
   },
-  icon: {
-    fontSize: 50,
-    color: 'black',
+  message:{
+    color: "white",
+  },
+  date:{
+    color: "white",
+    fontSize: 10,
+    alignSelf: "flex-end"
   },
   backgroundimage: {
     flex: 1,
   },
-  text:{
-    fontWeight: 'bold',
-    marginBottom: 5,
-    fontSize:20,
-  },
-  boxView: {
-    marginTop: 10,
-    paddingHorizontal: 5,
-  },
-  box: {
-    backgroundColor: '#F7D0D5',
-    width: '100%',
-    height: 80,
-    borderRadius: 10,
+  inputcontainer: {
     flexDirection: 'row',
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    justifyContent: 'space-between'
+    margin: 10,
   },
-  textView:{
-    flex: 5,
-    justifyContent: 'center'
+  maincontainer:{
+    flexDirection: 'row',
+    backgroundColor: 'white',
+    padding: 10,
+    margin: 10,
+    borderRadius: 50,
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center"
   },
-  chatDetail: {
-    fontSize: 16,
+  textinput:{
+    flex: 1,
+    marginHorizontal: 10,
+  },
+  buttoncontainer:{
+    backgroundColor: "#FF9900",
+    justifyContent: "center",
+    alignItems: "center",
+    margin: 10,
+    width: 50,
+    height: 50,
+    borderRadius: 50,
+  },
+  dayText:{
+    justifyContent: "center",
+    alignItems: "center",
+    alignContent: "center",
+    margin: 10,
+    textAlign: "center",
+    fontSize: 14,
     fontWeight: 'bold',
-  },
-  unreadView:{
-    justifyContent:"center",
-  },
-  unreadNum:{
-    backgroundColor: 'red',
-    borderRadius: "100%",
-    paddingHorizontal: 15,
-    paddingVertical: 10,
+    
   }
   
 });

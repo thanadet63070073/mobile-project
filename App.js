@@ -13,10 +13,10 @@ import LoginScreen from "./screen/LoginScreen";
 import RegisterScreen from "./screen/RegisterScreen";
 import HomeScreen from "./screen/HomeScreen";
 import TimetableScreen from './screen/TimetableScreen';
-import ChatScreen from './screen/ChatScreen';
+import ChatList from './screen/ChatList';
 import ProfileScreen from './screen/ProfileScree';
 import NotificationScreen from './screen/NotificationScreen';
-import ClassInfoScreen from './screen/ClassInfoScreen';
+import ChatScreen from './screen/ChatScreen';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -24,6 +24,15 @@ const rootReducer = combineReducers({
   reducer: loginReducer,
 });
 const store = createStore(rootReducer)
+
+function Chatstack(){
+  return (
+    <Stack.Navigator>
+      <Stack.Screen name="ChatList" component={ChatList} options={{headerShown: false}}/>
+      <Stack.Screen name="ChatScreen" component={ChatScreen} options={{headerTitleStyle:{color: 'white'}, headerStyle: {backgroundColor: '#FF9900'}}}/>
+    </Stack.Navigator>
+  )
+}
 
 function MenuTab() {
   return (
@@ -43,7 +52,7 @@ function MenuTab() {
             return <MaterialCommunityIcons name="timetable" size={size} color={color} />;
           },
         }}/>
-        <Tab.Screen name="Chat" component={ChatScreen} options={{tabBarActiveBackgroundColor: "white",
+        <Tab.Screen name="Chat" component={Chatstack} options={{tabBarActiveBackgroundColor: "white",
           tabBarIcon: ({ color, size }) => { 
             return <Entypo name="chat" size={size} color={color} />;
           },
@@ -67,7 +76,6 @@ export default function App() {
           <Stack.Screen name="Register Screen" component={RegisterScreen} options={{headerTitleStyle:{color: 'white'}, headerStyle: {backgroundColor: '#FF9900'}}}/>
           <Stack.Screen name="Home Screen" component={MenuTab} options={{headerShown: false}}/>
           <Stack.Screen name="Notification Screen" component={NotificationScreen} options={{headerShown: false}}/>
-          <Stack.Screen name="ClassInfo Screen" component={ClassInfoScreen} options={{headerShown: false}}/>
         </Stack.Navigator>
       </NavigationContainer>
     </Provider>
