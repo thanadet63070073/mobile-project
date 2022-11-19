@@ -10,12 +10,27 @@ import { MaterialCommunityIcons} from '@expo/vector-icons';
 import HeaderBar from "../component/HeaderBar";
 import { useSelector } from "react-redux";
 
+
+
 const HomeScreen = ({navigation}) => {
   const storeData = useSelector((state) => state.reducer.account);
   const [accountData, setData] = useState("");
+  
   useEffect(() => {
     setData(storeData[0]);
   }, []);
+
+  const StudentId = () =>{
+    if(accountData.student_id != null){
+      return <Text style={styles.text}>Student ID : {accountData.student_id}</Text>;
+    }
+  }
+  
+  const YearComponent = () =>{
+    if(accountData.year != null){
+      return <Text style={styles.text}>Year: {accountData.year}</Text>;
+    }
+  }
  
   return (
     <View style={styles.container}>
@@ -27,9 +42,9 @@ const HomeScreen = ({navigation}) => {
         <StatusBar style="auto" />
         <View style={styles.textView}>
           <MaterialCommunityIcons style={styles.Icon} name="account-circle-outline" />
-            <Text style={styles.text}>Student ID : {accountData.student_id}</Text>
+            <StudentId/>
             <Text style={styles.text}>{accountData.fname} {accountData.lname}</Text>
-            <Text style={styles.text}>Year: {accountData.year}</Text>
+            <YearComponent/>
             <Text style={styles.text}>Faculity : {accountData.faculty}</Text>
         </View>
       </ImageBackground>
@@ -63,4 +78,3 @@ const styles = StyleSheet.create({
 });
 
 export default HomeScreen;
-

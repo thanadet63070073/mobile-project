@@ -4,7 +4,6 @@ import {
   StyleSheet,
   Text,
   View,
-  Image,
   TouchableOpacity,
   ImageBackground,
   FlatList,
@@ -25,14 +24,14 @@ let bgColorArr = ['#FFEEEA', '#E9EAF4', '#EAF9FF', '#eaffea', '#fdeaff'];
 let circleColorArr = ['#FFCABD', '#BABDDB', '#B7CBFF', '#bdffbf', '#f5bdff']
 let txtColorArr = ['#FD6540', '#636BAE', '#2864FF', '#40a33c', '#da40fd'];
 let randomNumber = 0;
-
+let semesterArr = [];
 
 const TimetableScreen = ({navigation}) => {
   const [showData, setShowData] = useState([]);
   //get account data from store
   const storeData = useSelector((state) => state.reducer.account);
   const [accountData, setData] = useState("");
-
+  
   //drop down
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState('class');
@@ -49,15 +48,19 @@ const TimetableScreen = ({navigation}) => {
   ])
   const [dropdownDisplay, setDropdownDisplay] = useState("none");
 
+  const [open3, setOpen3] = useState(false);
+  const [value3, setValue3] = useState('');
+  const [items3, setItems3] = useState([]);
+
+  //Function
   function changeDropdown(){
-    console.log(value);
-    console.log(value2)
+    console.log(value +" "+ value2+" "+value3);
     if(value == "class"){
       setDropdownDisplay("none");
-      axios.post('http://'+ip+':3000/classTable', {account_id: accountData.account_id})
+      axios.post('http://'+ip+':3000/classTable', {account_id: accountData.account_id, semester: value3, role: accountData.role})
       .then(function (response){
-        console.log(response.data);
         if(response.data.status == 'complete'){
+          console.log(response.data);
           setShowData(response.data.classData);
         }
         else{
@@ -70,8 +73,9 @@ const TimetableScreen = ({navigation}) => {
     }
     else if(value == "exam"){
       setDropdownDisplay("flex");
-      axios.post('http://'+ip+':3000/examTable', {account_id: accountData.account_id, type: value2})
+      axios.post('http://'+ip+':3000/examTable', {account_id: accountData.account_id, type: value2, semester: value3, role: accountData.role})
       .then(function (response){
+        console.log(response.data);
         if(response.data.status == 'complete'){
           setShowData(response.data.examData);
         }
@@ -85,6 +89,7 @@ const TimetableScreen = ({navigation}) => {
     }
   }
 
+  //Component
   function DayComponent(props){
     if(currentDay != props.day){
       currentDay = props.day;
@@ -115,14 +120,36 @@ const TimetableScreen = ({navigation}) => {
       return <Text style={styles.dateText}>{examDate}, {examDay}</Text>
     }
   }
-  
+
   useEffect(() => {
     setData(storeData[0]);
   }, []);
 
   useEffect(() => {
     if(accountData){
-      axios.post('http://'+ip+':3000/classTable', {account_id: accountData.account_id})
+      axios.post('http://'+ip+':3000/semester', {account_id: accountData.account_id, role: accountData.role})
+      .then(function (response){
+        if(response.data.status == 'complete'){
+          semesterArr = response.data.semester;
+          for(let i in response.data.semester){
+            items3.push(response.data.semester[i]);
+          }
+          console.log(items3);
+          setValue3(semesterArr[0].value);
+        }
+        else{
+          console.log("error");
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+    }
+  }, [accountData])
+  
+  useEffect(() => {
+    if(accountData && semesterArr.length > 0){
+      axios.post('http://'+ip+':3000/classTable', {account_id: accountData.account_id, semester: value3, role: accountData.role})
       .then(function (response){
         if(response.data.status == 'complete'){
           setShowData(response.data.classData);
@@ -143,7 +170,7 @@ const TimetableScreen = ({navigation}) => {
       return(
         <View>
           <DayComponent day={item.day} />
-          <View style={styles.boxView}>
+          <TouchableOpacity style={styles.boxView} onPress={() => navigation.navigate("ClassInfo Screen", {classData: item})}>
             <View style={[styles.box, {backgroundColor: bgColorArr[randomNumber]}]}> 
               <View style={styles.circleView}>
                 <View style={[styles.circle, {backgroundColor: circleColorArr[randomNumber]}]}><Text style={styles.circleText}>{item.classType}</Text></View>
@@ -159,11 +186,12 @@ const TimetableScreen = ({navigation}) => {
                 </View>
               </View>
             </View>
-          </View>
+          </TouchableOpacity>
         </View>
       );
     }
     if(value == "exam"){
+      console.log(item);
       return (
         <View>
           <ExamDateComponent date={item.formatDate} day={item.day}/>
@@ -181,7 +209,6 @@ const TimetableScreen = ({navigation}) => {
             </View>
           </View>
         </View>
-        
       );
     }
   };
@@ -191,7 +218,7 @@ const TimetableScreen = ({navigation}) => {
       <StatusBar style="auto" />
       <HeaderBar navigation={navigation}/>
       <ImageBackground source={require("../assets/images/background-image.png")} resizeMode="cover" style={styles.backgroundimage}>
-        <View style={{flexDirection: 'row', width:'70%', zIndex: 100, justifyContent:'space-between', paddingRight: 10}}>
+        <View style={styles.dropDownView}>
           <DropDownPicker
             open={open}
             value={value}
@@ -200,7 +227,8 @@ const TimetableScreen = ({navigation}) => {
             setValue={setValue}
             setItems={setItems}
             onChangeValue={changeDropdown}
-            style={{borderWidth: 0, backgroundColor: 'transparent', width: 200, }}
+            containerStyle={{width: 200}}
+            style={{borderWidth: 0, backgroundColor: 'transparent', width: 200, zIndex: 2000}}
             labelStyle={{
               fontSize: 18,
               textDecorationLine: 'underline',
@@ -208,8 +236,30 @@ const TimetableScreen = ({navigation}) => {
               color: '#FF9900',
               fontWeight: 'bold',
             }}
-            dropDownContainerStyle={{width: 200}}
+            dropDownContainerStyle={{width: 200, zIndex: 2000}}
           />
+          
+          <DropDownPicker
+            open={open3}
+            value={value3}
+            items={items3}
+            setOpen={setOpen3}
+            setValue={setValue3}
+            setItems={setItems3}
+            onChangeValue={changeDropdown}
+            containerStyle={{width: 120}}
+            style={{borderWidth: 0, backgroundColor: 'transparent', width: 120, }}
+            labelStyle={{
+              fontSize: 18,
+              textDecorationLine: 'underline',
+              textDecorationThickness: 3,
+              color: '#FF9900',
+              fontWeight: 'bold',
+            }}
+            dropDownContainerStyle={{width: 120}}
+          />
+        </View>
+        <View style={{zIndex:5}}>
           <DropDownPicker
             open={open2}
             value={value2}
@@ -218,7 +268,8 @@ const TimetableScreen = ({navigation}) => {
             setValue={setValue2}
             setItems={setItems2}
             onChangeValue={changeDropdown}
-            style={{borderWidth: 0, backgroundColor: 'transparent', width: 150, display: dropdownDisplay}}
+            containerStyle={{width: 200}}
+            style={{borderWidth: 0, backgroundColor: 'transparent', width: 150, display: dropdownDisplay, }}
             labelStyle={{
               fontSize: 18,
               textDecorationLine: 'underline',
@@ -229,6 +280,7 @@ const TimetableScreen = ({navigation}) => {
             dropDownContainerStyle={{width: 150}}
           />
         </View>
+        
         <FlatList style={{paddingBottom:20}} data={showData} renderItem={renderItem}/>
       </ImageBackground>
     </View>
@@ -244,7 +296,9 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   dropDownView:{
-    flexDirection: 'row'
+    flexDirection: 'row',
+    zIndex: 10,
+    justifyContent: 'space-between'
   },
   boxView: {
     marginTop: 10,

@@ -16,6 +16,7 @@ import TimetableScreen from './screen/TimetableScreen';
 import ChatScreen from './screen/ChatScreen';
 import ProfileScreen from './screen/ProfileScree';
 import NotificationScreen from './screen/NotificationScreen';
+import ClassInfoScreen from './screen/ClassInfoScreen';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -66,6 +67,7 @@ export default function App() {
           <Stack.Screen name="Register Screen" component={RegisterScreen} options={{headerTitleStyle:{color: 'white'}, headerStyle: {backgroundColor: '#FF9900'}}}/>
           <Stack.Screen name="Home Screen" component={MenuTab} options={{headerShown: false}}/>
           <Stack.Screen name="Notification Screen" component={NotificationScreen} options={{headerShown: false}}/>
+          <Stack.Screen name="ClassInfo Screen" component={ClassInfoScreen} options={{headerShown: false}}/>
         </Stack.Navigator>
       </NavigationContainer>
     </Provider>
