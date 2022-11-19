@@ -6,6 +6,7 @@ import {
   View,
   ImageBackground,
   TextInput,
+  FlatList,
 } from "react-native";
 import { FontAwesome, MaterialCommunityIcons} from '@expo/vector-icons';
 import { useSelector } from "react-redux";
@@ -13,19 +14,49 @@ import { useSelector } from "react-redux";
 import axios from 'axios';
 import {ip} from '../Ip'
 import HeaderBar from "../component/HeaderBar";
-import { FlatList } from "react-native-web";
 
 let currentDay = "";
-const ChatScreen = ({navigation}) => {
+const ChatScreen = ({navigation, route}) => {
   const [chatData, setChatData] = useState([]);
   const storeData = useSelector((state) => state.reducer.account);
   const [accountData, setData] = useState("");
   const [chatText, setChatText] = useState("");
+  const [roomId, setRoomId] = useState("");
+  const receiver_id = route.params.receiver_id;
 
+  console.log(route.params);
   useEffect(() => {
     setData(storeData[0]);
     if(accountData){
-        axios.post('http://'+ip+':3000/chatData', {account_id: accountData.account_id, receiver_id: 4})
+        axios.post('http://'+ip+':3000/chatroom', {account_id: accountData.account_id, receiver_id: receiver_id})
+        .then(function (response){
+          console.log(response.data);
+          if(response.data.status == 'complete'){
+            setRoomId(response.data.room_id);
+          }
+          else{
+            console.log("error");
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+
+        axios.post('http://'+ip+':3000/readChat', {account_id: accountData.account_id, receiver_id: receiver_id})
+        .then(function (response){
+          console.log(response.data);
+          if(response.data.status == 'complete'){
+            console.log("complete");
+          }
+          else{
+            console.log("error");
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+        
+        axios.post('http://'+ip+':3000/chatData', {account_id: accountData.account_id, receiver_id: receiver_id})
         .then(function (response){
           if(response.data.status == 'complete'){
             setChatData(response.data.chatData);
@@ -49,8 +80,7 @@ const ChatScreen = ({navigation}) => {
 
   const renderMessage = ({item}) =>{
     return (
-        
-        <View style={[styles.container,]}>
+      <View style={[styles.container,]}>
         <DayComponent day={item.dateTime} />
         <View style={[styles.messageBox,
         {backgroundColor: item.sender_id == accountData.account_id ? "#FF9900" : "#747474",
@@ -60,17 +90,17 @@ const ChatScreen = ({navigation}) => {
             <Text style={styles.message}>{item.message}</Text>
             <Text style={styles.date}>{item.Time}</Text>
         </View>
-        </View>
+      </View>
     )
   }
   const sendMessage = () =>{
     if(chatText != ""){
         console.log(chatText)
         console.log(accountData.account_id)
-        axios.post('http://'+ip+':3000/chat', {account_id: accountData.account_id, receiver_id: 4, message:chatText})
+        axios.post('http://'+ip+':3000/chat', {account_id: accountData.account_id, receiver_id: receiver_id, message:chatText, room_id: roomId})
         .then((response) => {
             if(response.data.status == "complete"){
-                axios.post('http://'+ip+':3000/chatData', {account_id: accountData.account_id, receiver_id: 4})
+                axios.post('http://'+ip+':3000/chatData', {account_id: accountData.account_id, receiver_id: receiver_id})
                 .then(function (response){
                     if(response.data.status == 'complete'){
                     setChatData(response.data.chatData);
@@ -175,4 +205,3 @@ const styles = StyleSheet.create({
 });
 
 export default ChatScreen;
-

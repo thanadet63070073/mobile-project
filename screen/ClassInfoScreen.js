@@ -48,8 +48,6 @@ const ClassInfoScreen = ({ navigation, route }) => {
     }
   }, [oldNote]);
 
-  
-
   function addNote(){
     setEdit(true);
     refInput.current.focus();
@@ -114,13 +112,13 @@ const ClassInfoScreen = ({ navigation, route }) => {
           <View style={{flex:3}}>
             <View style={{flexDirection:'row'}}>
               <Text numberOfLines={2} style={styles.text2}>{subjectData.teacher1}</Text>
-              <TouchableOpacity style={[styles.btn2, {display: displayChat}]} onPress={() => alert('test')}>
+              <TouchableOpacity style={[styles.btn2, {display: displayChat}]} onPress={() => navigation.navigate("Chat Screen", {receiver_id: subjectData.teacher_id})}>
                 <Text style={styles.btnText2}>Chat</Text>
               </TouchableOpacity>
             </View>
             <View style={{flexDirection:'row', marginTop:10}}>
               <Text numberOfLines={2} style={styles.text2}>{subjectData.teacher2}</Text>
-              <TouchableOpacity style={[styles.btn2, {display: displayChat}]} onPress={() => alert('test')}>
+              <TouchableOpacity style={[styles.btn2, {display: displayChat}]} onPress={() => navigation.navigate("Chat Screen", {receiver_id: subjectData.teacher2_id})}>
                 <Text style={styles.btnText2}>Chat</Text>
               </TouchableOpacity>
             </View>
@@ -135,7 +133,7 @@ const ClassInfoScreen = ({ navigation, route }) => {
         <View style={{flex:3}}>
           <View style={{flexDirection:'row'}}>
             <Text numberOfLines={2} style={styles.text2}>{subjectData.teacher1}</Text>
-            <TouchableOpacity style={[styles.btn2, {display: displayChat}]} onPress={() => alert('test')}>
+            <TouchableOpacity style={[styles.btn2, {display: displayChat}]} onPress={() => navigation.navigate("Chat Screen", {receiver_id: subjectData.teacher_id})}>
               <Text style={styles.btnText2}>Chat</Text>
             </TouchableOpacity>
           </View>

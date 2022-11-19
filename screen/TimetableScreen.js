@@ -60,7 +60,6 @@ const TimetableScreen = ({navigation}) => {
       axios.post('http://'+ip+':3000/classTable', {account_id: accountData.account_id, semester: value3, role: accountData.role})
       .then(function (response){
         if(response.data.status == 'complete'){
-          console.log(response.data);
           setShowData(response.data.classData);
         }
         else{
@@ -75,7 +74,6 @@ const TimetableScreen = ({navigation}) => {
       setDropdownDisplay("flex");
       axios.post('http://'+ip+':3000/examTable', {account_id: accountData.account_id, type: value2, semester: value3, role: accountData.role})
       .then(function (response){
-        console.log(response.data);
         if(response.data.status == 'complete'){
           setShowData(response.data.examData);
         }
@@ -134,7 +132,6 @@ const TimetableScreen = ({navigation}) => {
           for(let i in response.data.semester){
             items3.push(response.data.semester[i]);
           }
-          console.log(items3);
           setValue3(semesterArr[0].value);
         }
         else{
@@ -191,7 +188,6 @@ const TimetableScreen = ({navigation}) => {
       );
     }
     if(value == "exam"){
-      console.log(item);
       return (
         <View>
           <ExamDateComponent date={item.formatDate} day={item.day}/>
