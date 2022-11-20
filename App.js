@@ -19,6 +19,9 @@ import ProfileScreen from './screen/ProfileScree';
 import NotificationScreen from './screen/NotificationScreen';
 import ClassInfoScreen from './screen/ClassInfoScreen';
 
+import io from 'socket.io-client'
+const socket = io.connect("http://localhost:3001")
+
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 const rootReducer = combineReducers({
@@ -28,7 +31,7 @@ const store = createStore(rootReducer)
 
 function MenuTab() {
   return (
-    <Provider store={store}>
+    <Provider socket={"test"} store={store}>
       <Tab.Navigator screenOptions={{headerShown: false, 
         tabBarShowLabel: false,
         tabBarActiveTintColor: "#FF9900",
@@ -44,12 +47,12 @@ function MenuTab() {
             return <MaterialCommunityIcons name="timetable" size={size} color={color} />;
           },
         }}/>
-        <Tab.Screen name="ChatList" component={ChatList} options={{unmountOnBlur: true, tabBarActiveBackgroundColor: "white",
+        <Tab.Screen initialParams={{socket:socket}} name="ChatList" component={ChatList} options={{unmountOnBlur: true, tabBarActiveBackgroundColor: "white",
           tabBarIcon: ({ color, size }) => { 
             return <Entypo name="chat" size={size} color={color} />;
           },
         }}/>
-        <Tab.Screen name="Profile" component={ProfileScreen} options={{tabBarActiveBackgroundColor: "white",
+        <Tab.Screen name="Profile"  component={ProfileScreen} options={{tabBarActiveBackgroundColor: "white",
           tabBarIcon: ({ color, size }) => { 
             return <MaterialCommunityIcons name="account-cog" size={size} color={color} />;
           },
@@ -68,7 +71,7 @@ export default function App() {
           <Stack.Screen name="Register Screen" component={RegisterScreen} options={{headerTitleStyle:{color: 'white'}, headerStyle: {backgroundColor: '#FF9900'}}}/>
           <Stack.Screen name="Home Screen" component={MenuTab} options={{headerShown: false}}/>
           <Stack.Screen name="Notification Screen" component={NotificationScreen} options={{headerShown: false}}/>
-          <Stack.Screen name="ClassInfo Screen" component={ClassInfoScreen} options={{headerShown: false}}/>
+          <Stack.Screen initialParams={{socket:socket}} name="ClassInfo Screen" component={ClassInfoScreen} options={{headerShown: false}}/>
           <Stack.Screen name="Chat Screen" component={ChatScreen} options={{headerTitleStyle:{color: 'white'}, headerStyle: {backgroundColor: '#FF9900'}}}/>
         </Stack.Navigator>
       </NavigationContainer>

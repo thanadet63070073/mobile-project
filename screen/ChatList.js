@@ -16,11 +16,17 @@ import axios from 'axios';
 import {ip} from '../Ip'
 import HeaderBar from "../component/HeaderBar";
 
-const ChatList = ({navigation}) => {
+// import io from 'socket.io-client'
+// const socket = io.connect("http://localhost:3001")
+// const socket = io.connect(SOCKET_URL, {
+//     transports: ['websocket'],
+//     reconnectionAttempts: 15 //Nombre de fois qu'il doit réessayer de se connecter
+//   });
+
+const ChatList = ({navigation, route}) => {
   const storeData = useSelector((state) => state.reducer.account);
   const [accountData, setData] = useState("");
   const [listData, setListData] = useState([]);
-  
   useEffect(() => {
     setData(storeData[0]);
   }, [accountData]);
@@ -41,7 +47,7 @@ const ChatList = ({navigation}) => {
       });
     }
   }, [accountData]);
-  
+
   const UnreadComponent = (props) => {
     if(props.unread != 0){
       return(
@@ -51,6 +57,13 @@ const ChatList = ({navigation}) => {
           </View>
         </View>
       );
+    }
+  }
+
+  const joinRoom = (roomId , id) =>{
+    if(accountData.account_id !== "" && roomId !== ""){
+      route.params.socket.emit("join_room", roomId);
+      navigation.navigate("Chat Screen", {socket: route.params.socket, receiver_id: id, roomId: roomId})
     }
   }
 
@@ -66,7 +79,7 @@ const ChatList = ({navigation}) => {
       anotherName = item.user1;
     }
     return(
-      <TouchableOpacity style={styles.boxView} onPress={() => navigation.navigate("Chat Screen", {receiver_id: anotherId})}>
+      <TouchableOpacity style={styles.boxView} onPress={() => {joinRoom(item.room_id, anotherId)}}>
         <View style={styles.box}>
           <View style={styles.iconView}>
             <MaterialCommunityIcons style={styles.icon} name="account-circle-outline" />
