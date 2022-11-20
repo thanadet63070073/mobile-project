@@ -7,13 +7,14 @@ import {
   ImageBackground,
   TextInput,
   FlatList,
+  KeyboardAvoidingView
 } from "react-native";
 import { FontAwesome, MaterialCommunityIcons} from '@expo/vector-icons';
 import { useSelector } from "react-redux";
+import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 
 import axios from 'axios';
 import {ip} from '../Ip'
-import HeaderBar from "../component/HeaderBar";
 
 let currentDay = "";
 const ChatScreen = ({navigation, route}) => {
@@ -24,7 +25,6 @@ const ChatScreen = ({navigation, route}) => {
   const [roomId, setRoomId] = useState("");
   const receiver_id = route.params.receiver_id;
 
-  console.log(route.params);
   useEffect(() => {
     setData(storeData[0]);
     if(accountData){
@@ -80,17 +80,17 @@ const ChatScreen = ({navigation, route}) => {
 
   const renderMessage = ({item}) =>{
     return (
-      <View style={[styles.container,]}>
-        <DayComponent day={item.dateTime} />
-        <View style={[styles.messageBox,
-        {backgroundColor: item.sender_id == accountData.account_id ? "#FF9900" : "#747474",
-        marginLeft: item.sender_id == accountData.account_id  ? 50 : 0,
-        marginRight: item.sender_id == accountData.account_id  ? 0 : 50,
-        }]}>
-            <Text style={styles.message}>{item.message}</Text>
-            <Text style={styles.date}>{item.Time}</Text>
+        <View style={[styles.container,]}>
+          <DayComponent day={item.dateTime} />
+          <View style={[styles.messageBox,
+          {backgroundColor: item.sender_id == accountData.account_id ? "#FF9900" : "#747474",
+          marginLeft: item.sender_id == accountData.account_id  ? 50 : 0,
+          marginRight: item.sender_id == accountData.account_id  ? 0 : 50,
+          }]}>
+              <Text style={styles.message}>{item.message}</Text>
+              <Text style={styles.date}>{item.Time}</Text>
+          </View>
         </View>
-      </View>
     )
   }
   const sendMessage = () =>{
@@ -126,21 +126,25 @@ const ChatScreen = ({navigation, route}) => {
   }
 
   return (
-    <View style={{flex: 1, justifyContent: "center"}}>
-        <ImageBackground source={require("../assets/images/background-image.png")} resizeMode="cover" style={styles.backgroundimage}>
-        <StatusBar style="auto" />
-        <FlatList data={chatData} renderItem={renderMessage}/>
-        <View style={styles.inputcontainer}>
-            <View style={styles.maincontainer}>
-                <FontAwesome name="smile-o" size={25} color="grey" />
-                <TextInput placeholder="Type a Message" multiline style={styles.textinput} onChangeText={setChatText}></TextInput>
+    
+      <View style={{flex: 1, justifyContent: "center"}}>
+          <ImageBackground source={require("../assets/images/background-image.png")} resizeMode="cover" style={styles.backgroundimage}>
+          <StatusBar style="auto" />
+          <FlatList data={chatData} renderItem={renderMessage}/>
+          <KeyboardAvoidingView behavior='position' keyboardVerticalOffset={50}>
+            <View style={styles.inputcontainer}>
+                <View style={styles.maincontainer}>
+                    <FontAwesome name="smile-o" size={25} color="grey" />
+                    <TextInput placeholder="Type a Message" multiline style={styles.textinput} onChangeText={setChatText}></TextInput>
+                </View>
+                <View style={styles.buttoncontainer}>
+                    <FontAwesome name="paper-plane" size={25} color="white"  onPress={sendMessage}/>
+                </View>
             </View>
-            <View style={styles.buttoncontainer}>
-                <FontAwesome name="paper-plane" size={25} color="white"  onPress={sendMessage}/>
-            </View>
-        </View>
-      </ImageBackground>
-    </View>
+          </KeyboardAvoidingView>
+        </ImageBackground>
+      </View>
+    
   );
 };
  

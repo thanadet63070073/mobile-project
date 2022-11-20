@@ -20,10 +20,6 @@ const ChatList = ({navigation}) => {
   const storeData = useSelector((state) => state.reducer.account);
   const [accountData, setData] = useState("");
   const [listData, setListData] = useState([]);
-
-  useEffect(() => {
-
-  }, []);
   
   useEffect(() => {
     setData(storeData[0]);
@@ -46,6 +42,17 @@ const ChatList = ({navigation}) => {
     }
   }, [accountData]);
   
+  const UnreadComponent = (props) => {
+    if(props.unread != 0){
+      return(
+        <View style={styles.unreadView}>
+          <View style={styles.unreadNum}>
+            <Text style={{fontWeight: 'bold', color: 'white', fontSize: 16}}>{props.unread}</Text>
+          </View>
+        </View>
+      );
+    }
+  }
 
   const renderItem = ({ item }) => {
     let anotherId = "";
@@ -67,11 +74,7 @@ const ChatList = ({navigation}) => {
           <View style={styles.textView}>
             <Text style={styles.chatDetail}>{anotherName}</Text>
           </View>
-          <View style={styles.unreadView}>
-            <View style={styles.unreadNum}>
-              <Text style={{fontWeight: 'bold', color: 'white', fontSize: 16}}>{item.unread}</Text>
-            </View>
-          </View>
+          <UnreadComponent unread={item.unread}/>
         </View>
       </TouchableOpacity>
     );
