@@ -15,8 +15,8 @@ import { accountLogin } from "../store/action/loginAction";
 import {ip} from '../Ip'
 
 const LoginScreen = ({navigation}) => {
-  const [username, setUsername] = useState("63070073");
-  const [password, setPassword] = useState("1234");
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
   const dispatch = useDispatch();
 
   function confirmLogin(){

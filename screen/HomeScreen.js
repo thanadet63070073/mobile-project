@@ -36,9 +36,6 @@ const HomeScreen = ({navigation}) => {
     <View style={styles.container}>
       <HeaderBar navigation={navigation}/>
       <ImageBackground source={require("../assets/images/background-image.png")} resizeMode="cover" style={styles.backgroundimage}>
-      
-        {/* <Image style={styles.logoImage} source={{uri:"https://www.kmids.ac.th/wp-content/uploads/2021/04/Sub-Logo-KMITL_KMITL-%E0%B8%9E%E0%B8%A3%E0%B8%B0%E0%B8%88%E0%B8%AD%E0%B8%A1%E0%B9%80%E0%B8%81%E0%B8%A5%E0%B9%89%E0%B8%B2%E0%B8%A5%E0%B8%B2%E0%B8%94%E0%B8%81%E0%B8%A3%E0%B8%B0%E0%B8%9A%E0%B8%B1%E0%B8%87.png"}} /> */}
-        
         <StatusBar style="auto" />
         <View style={styles.textView}>
           <MaterialCommunityIcons style={styles.Icon} name="account-circle-outline" />

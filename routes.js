@@ -5,7 +5,7 @@ const cors = require('cors');
 const connection = mysql.createPool({
   host: 'localhost',
   user: 'root',
-  password: 'password',
+  password: 'thanadet123@',
   database: 'mobile',
 });
 
@@ -137,7 +137,23 @@ app.post('/addNote', (req, res, next) => {
       return res.json({status: 'error'});
     }
     else{
-      return res.json({status: 'complete'});
+      connection.query('SELECT account_id FROM mobile.student_subsec WHERE subject_id = ? GROUP BY account_id',
+      [req.body.subject_id], function (error, result2, fields){
+        if(error){
+          return res.json({status: 'error'});
+        }
+        else{
+          for(let i=0; i<result2.length; i++){
+            connection.query('INSERT INTO notification (account_id, notification_name , notification_author, dateTime) VALUES(?, "add note", ?, CURRENT_TIMESTAMP) ',
+            [result2[i].account_id, req.body.account_id], function (error, result3, fields) {
+              if (error) {
+                return res.json({status: 'error'});
+              }
+            });
+          }
+          return res.json({status: 'complete'});
+        }
+      });
     }
   });
 });
@@ -192,21 +208,19 @@ app.post('/chat', (req, res ,next) =>{
 
 app.post('/chatroom', (req, res, next) => {
   connection.query('SELECT * FROM chatroom WHERE (account_1 = ? AND account_2 = ?) OR (account_1 = ? AND account_2 = ?)',
-  [req.body.account_id, req.body.receiver_id, req.body.account_id, req.body.receiver_id], function (error, result, fields){
+  [req.body.account_id, req.body.receiver_id, req.body.receiver_id, req.body.account_id], function (error, result, fields){
     if(error){
       return res.json({status: 'error'});
     }
     else{
-      console.log(result);
-      console.log(result.length);
       if(result.length == 0){
         connection.query('INSERT INTO chatroom (account_1, account_2) VALUES (?, ?)',
-        [req.body.account_id, req.body.receiver_id], function (error, result, fields){
+        [req.body.account_id, req.body.receiver_id], function (error, result2, fields){
           if(error){
             return res.json({status: 'error'});
           }
           else{
-            return res.json({room_id: result.insertId,status: 'complete'});
+            return res.json({room_id: result2.insertId,status: 'complete'});
           }
         });
       }
@@ -224,7 +238,31 @@ app.post('/readChat', (req, res, next) => {
       return res.json({status: 'error'});
     }
     else{
-      res.json({listData: result, status: 'complete'});
+      res.json({status: 'complete'});
+    }
+  });
+});
+
+app.post('/notification', (req, res, next) => {
+  connection.query('SELECT notification_id, notification.account_id, notification_name, date_format(dateTime, "%d-%m-%Y") as date, date_format(dateTime, "%H:%i") as time, CONCAT(A.fname, " ", A.lname) as author_name FROM notification JOIN account as A ON notification_author = A.account_id WHERE notification.account_id = ? ORDER BY dateTime',
+  [req.body.account_id], function (error, result, fields){
+    if(error){
+      return res.json({status: 'error'});
+    }
+    else{
+      return res.json({notificationData: result, status: 'complete'});
+    }
+  });
+});
+
+app.post('/deleteNotification', (req, res, next) => {
+  connection.query('DELETE FROM notification WHERE notification_id = ?',
+  [req.body.notification_id], function (error, result, fields){
+    if(error){
+      return res.json({status: 'error'});
+    }
+    else{
+      return res.json({status: 'complete'});
     }
   });
 });

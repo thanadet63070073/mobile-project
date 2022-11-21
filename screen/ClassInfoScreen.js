@@ -14,7 +14,6 @@ import axios from 'axios';
 import {ip} from '../Ip'
 import HeaderBar from "../component/HeaderBar";
 
-
 const ClassInfoScreen = ({ navigation, route }) => {
   let displayChat = 'none';
   const storeData = useSelector((state) => state.reducer.account);
@@ -55,7 +54,7 @@ const ClassInfoScreen = ({ navigation, route }) => {
   }
 
   function saveNote(){
-    axios.post('http://'+ip+':3000/addNote', {subject_id: classData.subject_id, notification: note})
+    axios.post('http://'+ip+':3000/addNote', {subject_id: classData.subject_id, notification: note, account_id: accountData.account_id})
     .then(function (response){
       console.log(response.data);
       if(response.data.status == 'complete'){
@@ -100,63 +99,26 @@ const ClassInfoScreen = ({ navigation, route }) => {
       }
     }
   }
-  const joinRoom = async () =>{
-    axios.post('http://'+ip+':3000/chatroom', {account_id: accountData.account_id, receiver_id: subjectData.teacher_id})
-        .then((response) => {
-            if(response.data.status == "complete"){
-                console.log(response.data.room_id)
-                if(accountData.account_id !== "" && response.data.room_id !== ""){
-                  route.params.socket.emit("join_room", response.data.room_id);
-                  navigation.navigate("Chat Screen", {socket: route.params.socket, receiver_id: subjectData.teacher_id, roomId: response.data.room_id+''})
-                }
-            }
-            else{
-              console.log("error")
-            }
-        })
-        .catch((err) =>{
-            alert("err: " + err);
-        });
-  }
-  const joinRoom2 = async () =>{
-    axios.post('http://'+ip+':3000/chatroom', {account_id: accountData.account_id, receiver_id: subjectData.teacher_id2})
-        .then((response) => {
-            if(response.data.status == "complete"){
-                console.log(response.data.room_id)
-                if(accountData.account_id !== "" && response.data.room_id !== ""){
-                  route.params.socket.emit("join_room", response.data.room_id);
-                  navigation.navigate("Chat Screen", {socket: route.params.socket, receiver_id: subjectData.teacher_id2, roomId: response.data.room_id+''})
-                }
-            }
-            else{
-              console.log("error")
-            }
-        })
-        .catch((err) =>{
-            alert("err: " + err);
-        });
-  }
-  
-  
 
   const TeacherComponent = () => {
     if(accountData.role == "student"){
       displayChat = 'flex';
     }
+
     if(subjectData.teacher2 != null){
       return(
         <View style={{flexDirection:'row'}}>
-          <Text style={styles.headtext}>Teacher: </Text>
+          <Text style={styles.text}>Teacher: </Text>
           <View style={{flex:3}}>
             <View style={{flexDirection:'row'}}>
-              <Text numberOfLines={2} style={styles.text}>{subjectData.teacher1}</Text>
-              <TouchableOpacity style={[styles.btn2, {display: displayChat}]} onPress={() => {joinRoom()}}>
+              <Text numberOfLines={2} style={styles.text2}>{subjectData.teacher1}</Text>
+              <TouchableOpacity style={[styles.btn2, {display: displayChat}]} onPress={() => navigation.navigate("Chat Screen", {receiver_id: subjectData.teacher_id, title: subjectData.teacher1})}>
                 <Text style={styles.btnText2}>Chat</Text>
               </TouchableOpacity>
             </View>
             <View style={{flexDirection:'row', marginTop:10}}>
-              <Text numberOfLines={2} style={styles.text}>{subjectData.teacher2}</Text>
-              <TouchableOpacity style={[styles.btn2, {display: displayChat}]} onPress={() => {joinRoom2()}}>
+              <Text numberOfLines={2} style={styles.text2}>{subjectData.teacher2}</Text>
+              <TouchableOpacity style={[styles.btn2, {display: displayChat}]} onPress={() => navigation.navigate("Chat Screen", {receiver_id: subjectData.teacher2_id, title: subjectData.teacher2})}>
                 <Text style={styles.btnText2}>Chat</Text>
               </TouchableOpacity>
             </View>
@@ -167,11 +129,11 @@ const ClassInfoScreen = ({ navigation, route }) => {
     else{
       return(
         <View style={{flexDirection:'row'}}>
-        <Text style={styles.headtext}>Teacher: </Text>
+        <Text style={styles.text}>Teacher: </Text>
         <View style={{flex:3}}>
           <View style={{flexDirection:'row'}}>
-            <Text numberOfLines={2} style={styles.text}>{subjectData.teacher1}</Text>
-            <TouchableOpacity style={[styles.btn2, {display: displayChat}]} onPress={() => {joinRoom()}}>
+            <Text numberOfLines={2} style={styles.text2}>{subjectData.teacher1}</Text>
+            <TouchableOpacity style={[styles.btn2, {display: displayChat}]} onPress={() => navigation.navigate("Chat Screen", {receiver_id: subjectData.teacher_id, title: subjectData.teacher1})}>
               <Text style={styles.btnText2}>Chat</Text>
             </TouchableOpacity>
           </View>
@@ -183,10 +145,10 @@ const ClassInfoScreen = ({ navigation, route }) => {
 
   const ClassType = () => {
     if(classData.classType == "LEC"){
-      return <Text style={styles.headtext}>Class Type: Lecture</Text>
+      return <Text style={styles.text}>Class Type: Lecture</Text>
     }
     else{
-      return <Text style={styles.headtext}>Class Type: Lab</Text>
+      return <Text style={styles.text}>Class Type: Lab</Text>
     }
   }
 
@@ -196,25 +158,13 @@ const ClassInfoScreen = ({ navigation, route }) => {
       <ImageBackground source={require("../assets/images/background-image.png")} resizeMode="cover" style={styles.backgroundimage}>
         <StatusBar style="auto" />
         <View style={styles.contentView}>
-          <View style={styles.containerText}>
-            <Text numberOfLines={2} style={styles.headtext}>Class Name:</Text>
-            <Text style={styles.text}>{classData.subjectname}</Text>
-          </View>
-          <View style={styles.containerText}>
-            <Text style={styles.headtext}>Time:</Text>
-            <Text style={styles.text}>{classData.startTime} - {classData.endTime}</Text>
-          </View>
-          <View style={styles.containerText}>
-            <Text style={styles.headtext}>Room:</Text>
-            <Text style={styles.text}>{classData.room}</Text>
-          </View>
-          <View style={styles.containerText}>
-            <Text style={styles.headtext}>Building:</Text>
-            <Text style={styles.text}>{classData.building}</Text>
-          </View>
+          <Text numberOfLines={2} style={styles.text}>Class Name: {classData.subjectname}</Text>
+          <Text style={styles.text}>Time: {classData.startTime} - {classData.endTime}</Text>
+          <Text style={styles.text}>Room: {classData.room}</Text>
+          <Text numberOfLines={2} style={styles.text}>Building: {classData.building}</Text>
           <ClassType/>
           <TeacherComponent/>
-          <Text style={styles.headtext}>Teacher Note:</Text>
+          <Text style={styles.text}>Teacher Note:</Text>
           <TextInput
             style={styles.TextInput}
             ref = {refInput}
@@ -259,17 +209,17 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     height: '95%',
   },
-  headtext: {
-    fontSize: 15,
+  text: {
+    fontSize: 20,
     fontWeight: 'bold',
     marginBottom: 10,
     color: '#FF9900',
   },
-  text:{
-    fontSize: 15,
-    flex: 1,
-    paddingLeft: 10,
+  text2:{
+    fontSize: 20,
     fontWeight: 'bold',
+    color: '#FF9900',
+    flex: 1
   },
   TextInput: {
     width: '100%',
@@ -300,14 +250,11 @@ const styles = StyleSheet.create({
   btnText2: {
     color:'white',
     fontWeight: 'bold',
-    fontSize: 14,
+    fontSize: 14
   },
   btnContainer:{
     flexDirection: 'row',
     justifyContent: 'center'
-  },
-  containerText:{
-    flexDirection: 'row'
   }
 });
 

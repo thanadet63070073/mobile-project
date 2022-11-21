@@ -4,7 +4,6 @@ import {
   StyleSheet,
   Text,
   View,
-  Image,
   TouchableOpacity,
   ImageBackground,
   FlatList,
@@ -16,20 +15,15 @@ import axios from 'axios';
 import {ip} from '../Ip'
 import HeaderBar from "../component/HeaderBar";
 
-// import io from 'socket.io-client'
-// const socket = io.connect("http://localhost:3001")
-// const socket = io.connect(SOCKET_URL, {
-//     transports: ['websocket'],
-//     reconnectionAttempts: 15 //Nombre de fois qu'il doit réessayer de se connecter
-//   });
-
-const ChatList = ({navigation, route}) => {
+let keep = [];
+const ChatList = ({navigation}) => {
   const storeData = useSelector((state) => state.reducer.account);
   const [accountData, setData] = useState("");
   const [listData, setListData] = useState([]);
+  
   useEffect(() => {
     setData(storeData[0]);
-  }, [accountData]);
+  }, []);
 
   useEffect(() => {
     if(accountData){
@@ -47,7 +41,7 @@ const ChatList = ({navigation, route}) => {
       });
     }
   }, [accountData]);
-
+  
   const UnreadComponent = (props) => {
     if(props.unread != 0){
       return(
@@ -60,11 +54,35 @@ const ChatList = ({navigation, route}) => {
     }
   }
 
-  const joinRoom = (roomId , id) =>{
-    if(accountData.account_id !== "" && roomId !== ""){
-      route.params.socket.emit("join_room", roomId);
-      navigation.navigate("Chat Screen", {socket: route.params.socket, receiver_id: id, roomId: roomId})
-    }
+  function goChatScreen(anotherId, anotherName){
+    // set unread to 0
+    axios.post('http://'+ip+':3000/readChat', {account_id: accountData.account_id, receiver_id: anotherId})
+    .then(function (response){
+      console.log(response.data);
+      if(response.data.status == 'complete'){
+        console.log("complete");
+        axios.post('http://'+ip+':3000/chatList', {account_id: accountData.account_id})
+        .then((response) => {
+          if(response.data.status == 'complete'){
+            setListData(response.data.listData);
+          }
+          else{
+            console.log("error");
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+      }
+      else{
+        console.log("error");
+      }
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+
+    navigation.navigate("Chat Screen", {receiver_id: anotherId, title: anotherName})
   }
 
   const renderItem = ({ item }) => {
@@ -79,7 +97,7 @@ const ChatList = ({navigation, route}) => {
       anotherName = item.user1;
     }
     return(
-      <TouchableOpacity style={styles.boxView} onPress={() => {joinRoom(item.room_id, anotherId)}}>
+      <TouchableOpacity style={styles.boxView} onPress={() => goChatScreen(anotherId, anotherName, item)}>
         <View style={styles.box}>
           <View style={styles.iconView}>
             <MaterialCommunityIcons style={styles.icon} name="account-circle-outline" />
